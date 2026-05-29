@@ -7,7 +7,7 @@ export const dynamic = 'force-dynamic';
 // Profilni olish
 export async function GET(request) {
   const auth = getTelegramUser(request);
-  if (!auth.ok) return Response.json({ error: 'unauthorized' }, { status: 401 });
+  if (!auth.ok) return Response.json({ error: 'unauthorized', reason: auth.reason || 'invalid' }, { status: 401 });
 
   const sb = getSupabase();
   const { data, error } = await sb
@@ -23,7 +23,7 @@ export async function GET(request) {
 // Profilni yaratish yoki yangilash
 export async function POST(request) {
   const auth = getTelegramUser(request);
-  if (!auth.ok) return Response.json({ error: 'unauthorized' }, { status: 401 });
+  if (!auth.ok) return Response.json({ error: 'unauthorized', reason: auth.reason || 'invalid' }, { status: 401 });
 
   const body = await request.json();
   const sb = getSupabase();

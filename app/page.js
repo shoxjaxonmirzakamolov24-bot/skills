@@ -137,7 +137,7 @@ function ProfileForm({ initial, onSaved, hasTelegram, isEdit }) {
     });
     setSaving(false);
     if (data.profile) onSaved(data.profile);
-    else setErr(data.error || 'Xatolik yuz berdi.');
+    else setErr((data.error || 'Xatolik') + (data.reason ? ' — sabab: ' + data.reason : ''));
   }
 
   return (
