@@ -24,6 +24,27 @@ function parseSkills(text) {
   return text.split(',').map((s) => s.trim()).filter(Boolean);
 }
 
+function initial(name) {
+  return (name || '?').trim().charAt(0).toUpperCase();
+}
+
+function levelLabel(l) {
+  return { beginner: 'Boshlang\'ich', intermediate: 'O\'rta', advanced: 'Yuqori' }[l] || '';
+}
+
+// Brend sarlavha (gradient banner)
+function Brand({ subtitle }) {
+  return (
+    <header className="brand">
+      <div className="brand-logo">🔄</div>
+      <div>
+        <div className="brand-name">SkillSwap</div>
+        <div className="brand-sub">{subtitle || 'Bilim evaziga bilim — pulsiz'}</div>
+      </div>
+    </header>
+  );
+}
+
 export default function Home() {
   const [loading, setLoading] = useState(true);
   const [profile, setProfile] = useState(null);
@@ -121,7 +142,8 @@ function ProfileForm({ initial, onSaved, hasTelegram, isEdit }) {
 
   return (
     <div>
-      <h1>{isEdit ? '👤 Profilim' : '👋 Xush kelibsiz!'}</h1>
+      <Brand subtitle={isEdit ? 'Profilingni boshqar' : 'Xush kelibsiz!'} />
+      <h1>{isEdit ? '👤 Profilim' : '✨ Keling, tanishamiz'}</h1>
       <p className="muted">
         {isEdit
           ? 'Ma\'lumotlaringni yangilashing mumkin.'
@@ -129,8 +151,8 @@ function ProfileForm({ initial, onSaved, hasTelegram, isEdit }) {
       </p>
 
       {!hasTelegram && (
-        <div className="note">
-          ⚠️ Ilova Telegram tashqarisida ochildi. To'liq ishlashi uchun uni Telegram bot orqali oching.
+        <div className="note warn">
+          ⚠️ Ilova Telegram tashqarisida ochildi. To'liq ishlashi uchun uni <b>bot orqali</b> (/start → tugma) oching.
         </div>
       )}
 
@@ -183,11 +205,13 @@ function MatchesView({ profile }) {
 
   return (
     <div>
-      <h1>🔍 Sizga mos odamlar</h1>
+      <Brand subtitle="Sizga mos almashinuvlar" />
+      <h1>🔍 Mos odamlar</h1>
       <p className="muted">Ikki tomonlama moslik — eng yaxshi almashinuv.</p>
       {matches.length === 0 && (
-        <div className="card">
-          <p>Hozircha moslik yo'q. 😕</p>
+        <div className="empty">
+          <span className="emoji">🌱</span>
+          <p><b>Hozircha moslik yo'q</b></p>
           <p className="muted">
             Bu odatda platformada odam kamligidan. Do'stlaringni taklif qil yoki keyinroq qayta tekshir.
           </p>
@@ -224,12 +248,18 @@ function MatchCard({ m }) {
   }
 
   return (
-    <div className="card">
+    <div className={`card ${m.mutual ? 'mutual' : ''}`}>
       <div className="row between">
-        <strong>{m.first_name}</strong>
-        {m.mutual ? <span className="badge">🔁 Ikki tomonlama</span> : <span className="badge gray">Bir tomonlama</span>}
+        <div className="row">
+          <div className="avatar">{initial(m.first_name)}</div>
+          <div>
+            <strong>{m.first_name}</strong>
+            <div className="muted" style={{ fontSize: 12 }}>{levelLabel(m.level)}</div>
+          </div>
+        </div>
+        {m.mutual ? <span className="badge grad">🔁 Ikki tomonlama</span> : <span className="badge gray">Bir tomonlama</span>}
       </div>
-      {m.bio && <p className="muted" style={{ margin: '4px 0' }}>{m.bio}</p>}
+      {m.bio && <p className="muted" style={{ margin: '8px 0 0' }}>{m.bio}</p>}
 
       {m.theyGiveIWant?.length > 0 && (
         <div style={{ marginTop: 8 }}>
@@ -282,6 +312,7 @@ function RequestsView({ profile }) {
 
   return (
     <div>
+      <Brand subtitle="Almashinuv so'rovlari" />
       <h1>🤝 So'rovlar</h1>
 
       <h2>📥 Senga kelganlar</h2>
@@ -323,7 +354,10 @@ function RequestCard({ r, mine, reload }) {
   return (
     <div className="card">
       <div className="row between">
-        <strong>{other?.first_name || 'Foydalanuvchi'}</strong>
+        <div className="row">
+          <div className="avatar">{initial(other?.first_name)}</div>
+          <strong>{other?.first_name || 'Foydalanuvchi'}</strong>
+        </div>
         <span className="badge blue">{statusLabel(r.status)}</span>
       </div>
       {r.message && <p className="muted" style={{ margin: '6px 0' }}>“{r.message}”</p>}
